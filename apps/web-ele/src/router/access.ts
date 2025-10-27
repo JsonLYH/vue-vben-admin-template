@@ -1,3 +1,6 @@
+/**
+ * 权限相关路由
+ */
 import type {
   ComponentRecordType,
   GenerateMenuAndRoutesOptions,
@@ -14,6 +17,7 @@ import { $t } from '#/locales';
 
 const forbiddenComponent = () => import('#/views/_core/fallback/forbidden.vue');
 
+// 在路由守卫阶段调用
 async function generateAccess(options: GenerateMenuAndRoutesOptions) {
   const pageMap: ComponentRecordType = import.meta.glob('../views/**/*.vue');
 
@@ -21,7 +25,6 @@ async function generateAccess(options: GenerateMenuAndRoutesOptions) {
     BasicLayout,
     IFrameView,
   };
-
   return await generateAccessible(preferences.app.accessMode, {
     ...options,
     fetchMenuListAsync: async () => {

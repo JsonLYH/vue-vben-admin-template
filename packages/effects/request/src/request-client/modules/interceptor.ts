@@ -19,9 +19,11 @@ class InterceptorManager {
   private axiosInstance: AxiosInstance;
 
   constructor(instance: AxiosInstance) {
+    // axios实例
     this.axiosInstance = instance;
   }
 
+  // 添加请求拦截器
   addRequestInterceptor({
     fulfilled,
     rejected,
@@ -29,6 +31,7 @@ class InterceptorManager {
     this.axiosInstance.interceptors.request.use(fulfilled, rejected);
   }
 
+  // 添加响应拦截器
   addResponseInterceptor<T = any>({
     fulfilled,
     rejected,

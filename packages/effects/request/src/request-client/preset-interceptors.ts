@@ -6,22 +6,24 @@ import { isFunction } from '@vben/utils';
 
 import axios from 'axios';
 
-export const defaultResponseInterceptor = ({
-  codeField = 'code',
-  dataField = 'data',
-  successCode = 0,
-}: {
+type defaultResponseInterceptorType = {
   /** 响应数据中代表访问结果的字段名 */
   codeField: string;
   /** 响应数据中装载实际数据的字段名，或者提供一个函数从响应数据中解析需要返回的数据 */
   dataField: ((response: any) => any) | string;
   /** 当codeField所指定的字段值与successCode相同时，代表接口访问成功。如果提供一个函数，则返回true代表接口访问成功 */
   successCode: ((code: any) => boolean) | number | string;
-}): ResponseInterceptorConfig => {
+};
+// 默认响应拦截器（先根据http状态码进行判断，再根据业务状态码进行判断）
+export const defaultResponseInterceptor = ({
+  codeField = 'code',
+  dataField = 'data',
+  successCode = 0,
+}: defaultResponseInterceptorType): ResponseInterceptorConfig => {
   return {
     fulfilled: (response) => {
       const { config, data: responseData, status } = response;
-
+      // 如果是原始格式则响应的内容，不根据dataField、codeField、successCode进行
       if (config.responseReturn === 'raw') {
         return response;
       }
@@ -34,6 +36,7 @@ export const defaultResponseInterceptor = ({
             ? successCode(responseData[codeField])
             : responseData[codeField] === successCode
         ) {
+          // 如果是成功的响应，则响应内容
           return isFunction(dataField)
             ? dataField(responseData)
             : responseData[dataField];
@@ -44,19 +47,24 @@ export const defaultResponseInterceptor = ({
   };
 };
 
+type authenticateResponseInterceptorType = {
+  client: RequestClient;
+  doReAuthenticate: () => Promise<void>;
+  doRefreshToken: () => Promise<string>;
+  enableRefreshToken: boolean;
+  formatToken: (token: string) => null | string;
+  tokenName: () => string;
+};
+
+// 鉴权响应拦截器(根据http状态码进行判断)
 export const authenticateResponseInterceptor = ({
   client,
   doReAuthenticate,
   doRefreshToken,
   enableRefreshToken,
   formatToken,
-}: {
-  client: RequestClient;
-  doReAuthenticate: () => Promise<void>;
-  doRefreshToken: () => Promise<string>;
-  enableRefreshToken: boolean;
-  formatToken: (token: string) => null | string;
-}): ResponseInterceptorConfig => {
+  tokenName = () => 'Authorization',
+}: authenticateResponseInterceptorType): ResponseInterceptorConfig => {
   return {
     rejected: async (error) => {
       const { config, response } = error;
@@ -74,7 +82,7 @@ export const authenticateResponseInterceptor = ({
       if (client.isRefreshing) {
         return new Promise((resolve) => {
           client.refreshTokenQueue.push((newToken: string) => {
-            config.headers.Authorization = formatToken(newToken);
+            config.headers[tokenName()] = formatToken(newToken);
             resolve(client.request(config.url, { ...config }));
           });
         });
@@ -109,6 +117,7 @@ export const authenticateResponseInterceptor = ({
   };
 };
 
+// 错误消息拦截器（根据http状态码进行判断）
 export const errorMessageResponseInterceptor = (
   makeErrorMessage?: MakeErrorMessageFn,
 ): ResponseInterceptorConfig => {

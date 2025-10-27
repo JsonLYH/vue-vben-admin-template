@@ -18,14 +18,20 @@ import {
   mapTree,
 } from '@vben/utils';
 
+/**
+ * 路由守卫阶段调用
+ * @param mode
+ * @param options
+ * @returns 返回菜单、路由信息
+ */
 async function generateAccessible(
   mode: AccessModeType,
   options: GenerateMenuAndRoutesOptions,
 ) {
   const { router } = options;
-
+  // 深拷贝初始化时注册的路由
   options.routes = cloneDeep(options.routes);
-  // 生成路由
+  // 生成路由（在此函数，进行区分路由权限模式--前端访问控制、后端访问控制、混合模式）
   const accessibleRoutes = await generateRoutes(mode, options);
 
   const root = router.getRoutes().find((item) => item.path === '/');
@@ -89,6 +95,7 @@ async function generateRoutes(
       break;
     }
     case 'frontend': {
+      // generateRoutesByFrontend复制权限的判断，路由的过滤
       resultRoutes = await generateRoutesByFrontend(
         routes,
         roles || [],
@@ -145,7 +152,7 @@ async function generateRoutes(
     if (!firstChild?.path || !firstChild.path.startsWith('/')) {
       return route;
     }
-
+    // 补充route.redirect路径信息
     route.redirect = firstChild.path;
     return route;
   });

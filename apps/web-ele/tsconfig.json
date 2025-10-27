@@ -3,6 +3,7 @@
   "extends": "@vben/tsconfig/web-app.json",
   "compilerOptions": {
     "baseUrl": ".",
+    //为了IDEA可以正确识别路径
     "paths": {
       "#/*": ["./src/*"]
     }

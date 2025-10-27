@@ -21,7 +21,10 @@ import { refreshTokenApi } from './core';
 
 const { apiURL } = useAppConfig(import.meta.env, import.meta.env.PROD);
 
-function createRequestClient(baseURL: string, options?: RequestClientOptions) {
+function createRequestClient(
+  baseURL: string,
+  options: RequestClientOptions = {},
+) {
   const client = new RequestClient({
     ...options,
     baseURL,
@@ -50,33 +53,39 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
    */
   async function doRefreshToken() {
     const accessStore = useAccessStore();
-    const resp = await refreshTokenApi();
-    const newToken = resp.data;
+    const data = await refreshTokenApi({
+      refreshToken: accessStore.refreshToken,
+    });
+    const newToken = data;
     accessStore.setAccessToken(newToken);
     return newToken;
   }
 
+  // 格式化token
   function formatToken(token: null | string) {
     return token ? `Bearer ${token}` : null;
   }
 
-  // 请求头处理
+  // 请求拦截器
   client.addRequestInterceptor({
     fulfilled: async (config) => {
       const accessStore = useAccessStore();
-
-      config.headers.Authorization = formatToken(accessStore.accessToken);
+      if (accessStore.tokenName) {
+        config.headers[accessStore.tokenName] = formatToken(
+          accessStore.accessToken,
+        );
+      }
       config.headers['Accept-Language'] = preferences.app.locale;
       return config;
     },
   });
 
-  // 处理返回的响应数据格式
+  // 处理返回的响应数据格式，如果dataField不是一个函数，则默认是直接返回response['dataField']内容
   client.addResponseInterceptor(
     defaultResponseInterceptor({
       codeField: 'code',
       dataField: 'data',
-      successCode: 0,
+      successCode: 200,
     }),
   );
 
@@ -88,6 +97,10 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
       doRefreshToken,
       enableRefreshToken: preferences.app.enableRefreshToken,
       formatToken,
+      tokenName: () => {
+        const accessStore = useAccessStore();
+        return accessStore.tokenName || 'Authorization';
+      },
     }),
   );
 
@@ -105,7 +118,14 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
 
   return client;
 }
-
+/**
+ * responseReturn配置为'data' 则根据以下响应拦截器进行返回
+ * defaultResponseInterceptor({
+      codeField: 'code',
+      dataField: 'data',
+      successCode: 0,
+    })
+ */
 export const requestClient = createRequestClient(apiURL, {
   responseReturn: 'data',
 });

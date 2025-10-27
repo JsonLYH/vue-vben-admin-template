@@ -35,6 +35,7 @@ interface AccessState {
    * 锁屏密码
    */
   lockScreenPassword?: string;
+
   /**
    * 登录是否过期
    */
@@ -43,6 +44,14 @@ interface AccessState {
    * 登录 accessToken
    */
   refreshToken: AccessToken;
+  /**
+   * 登录-记住密码
+   */
+  rememberPassWordInfo?: any;
+  /**
+   * token 名称
+   */
+  tokenName: string;
 }
 
 /**
@@ -85,6 +94,9 @@ export const useAccessStore = defineStore('core-access', {
     setAccessToken(token: AccessToken) {
       this.accessToken = token;
     },
+    setTokenName(name: string) {
+      this.tokenName = name;
+    },
     setIsAccessChecked(isAccessChecked: boolean) {
       this.isAccessChecked = isAccessChecked;
     },
@@ -98,6 +110,9 @@ export const useAccessStore = defineStore('core-access', {
       this.isLockScreen = false;
       this.lockScreenPassword = undefined;
     },
+    setRememberPassWordInfo(info: any) {
+      this.rememberPassWordInfo = info;
+    },
   },
   persist: {
     // 持久化
@@ -107,6 +122,8 @@ export const useAccessStore = defineStore('core-access', {
       'accessCodes',
       'isLockScreen',
       'lockScreenPassword',
+      'tokenName',
+      'rememberPassWordInfo',
     ],
   },
   state: (): AccessState => ({
@@ -114,8 +131,10 @@ export const useAccessStore = defineStore('core-access', {
     accessMenus: [],
     accessRoutes: [],
     accessToken: null,
+    tokenName: 'authorization',
     isAccessChecked: false,
     isLockScreen: false,
+    rememberPassWordInfo: {},
     lockScreenPassword: undefined,
     loginExpired: false,
     refreshToken: null,

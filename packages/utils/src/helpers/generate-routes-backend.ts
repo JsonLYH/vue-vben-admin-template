@@ -17,6 +17,7 @@ async function generateRoutesByBackend(
   const { fetchMenuListAsync, layoutMap = {}, pageMap = {} } = options;
 
   try {
+    // 从接口获取的路由数据
     const menuRoutes = await fetchMenuListAsync?.();
     if (!menuRoutes) {
       return [];
@@ -27,7 +28,6 @@ async function generateRoutesByBackend(
     for (const [key, value] of Object.entries(pageMap)) {
       normalizePageMap[normalizeViewPath(key)] = value;
     }
-
     const routes = convertRoutes(menuRoutes, layoutMap, normalizePageMap);
 
     return routes;

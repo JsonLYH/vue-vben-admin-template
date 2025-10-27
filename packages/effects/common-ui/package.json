@@ -39,6 +39,7 @@
     "@vben/locales": "workspace:*",
     "@vben/types": "workspace:*",
     "@vueuse/core": "catalog:",
+    "@vben/stores": "workspace:*",
     "@vueuse/integrations": "catalog:",
     "json-bigint": "catalog:",
     "qrcode": "catalog:",

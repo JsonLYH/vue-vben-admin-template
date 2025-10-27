@@ -1,3 +1,6 @@
+/**
+ * 必备基本路由（登录、默认首页、404页）
+ */
 import type { RouteRecordRaw } from 'vue-router';
 
 import { LOGIN_PATH } from '@vben/constants';

@@ -53,8 +53,11 @@ export function resetAllStores() {
     console.error('Pinia is not installed');
     return;
   }
+  const excludeStores = new Set(['remember']);
   const allStores = (pinia as any)._s;
   for (const [_key, store] of allStores) {
-    store.$reset();
+    if (!excludeStores.has(_key)) {
+      store.$reset();
+    }
   }
 }

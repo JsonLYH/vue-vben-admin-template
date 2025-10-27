@@ -9,6 +9,7 @@ import { computed, onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { $t } from '@vben/locales';
+import { useRememberStore } from '@vben/stores';
 
 import { useVbenForm } from '@vben-core/form-ui';
 import { VbenButton, VbenCheckbox } from '@vben-core/shadcn-ui';
@@ -23,7 +24,6 @@ interface Props extends AuthenticationProps {
 defineOptions({
   name: 'AuthenticationLogin',
 });
-
 const props = withDefaults(defineProps<Props>(), {
   codeLoginPath: '/auth/code-login',
   forgetPasswordPath: '/auth/forget-password',
@@ -41,11 +41,10 @@ const props = withDefaults(defineProps<Props>(), {
   subTitle: '',
   title: '',
 });
-
 const emit = defineEmits<{
   submit: [Recordable<any>];
 }>();
-
+const rememberStore = useRememberStore();
 const [Form, formApi] = useVbenForm(
   reactive({
     commonConfig: {
@@ -59,12 +58,14 @@ const [Form, formApi] = useVbenForm(
 const router = useRouter();
 
 const REMEMBER_ME_KEY = `REMEMBER_ME_USERNAME_${location.hostname}`;
+const REMEMBER_ME_PASSWORD_KEY = `REMEMBER_ME_PASSWORD_${location.hostname}`;
 
 const localUsername = localStorage.getItem(REMEMBER_ME_KEY) || '';
 
 const rememberMe = ref(!!localUsername);
 
 async function handleSubmit() {
+  // 登录表单校验
   const { valid } = await formApi.validate();
   const values = await formApi.getValues();
   if (valid) {
@@ -72,6 +73,9 @@ async function handleSubmit() {
       REMEMBER_ME_KEY,
       rememberMe.value ? values?.username : '',
     );
+    rememberStore.setRememberPassWordInfo({
+      [REMEMBER_ME_PASSWORD_KEY]: rememberMe.value ? values?.password : '',
+    });
     emit('submit', values);
   }
 }
@@ -81,8 +85,14 @@ function handleGo(path: string) {
 }
 
 onMounted(() => {
+  const localPassword =
+    rememberStore.rememberPassWordInfo[REMEMBER_ME_PASSWORD_KEY] || '';
+  // 记住密码回填
   if (localUsername) {
     formApi.setFieldValue('username', localUsername);
+  }
+  if (localPassword) {
+    formApi.setFieldValue('password', localPassword);
   }
 });
 

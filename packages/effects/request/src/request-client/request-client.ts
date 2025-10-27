@@ -61,23 +61,28 @@ class RequestClient {
       headers: {
         'Content-Type': 'application/json;charset=utf-8',
       },
+      // 默认是返回原始响应体
       responseReturn: 'raw',
       // 默认超时时间
       timeout: 10_000,
     };
     const { ...axiosConfig } = options;
+    // 用户的axios配置与默认配置合并(以用户配置为优先，对默认配置进行覆盖)
     const requestConfig = merge(axiosConfig, defaultConfig);
     requestConfig.paramsSerializer = getParamsSerializer(
       requestConfig.paramsSerializer,
     );
+    // 创建axios实例
     this.instance = axios.create(requestConfig);
 
     bindMethods(this);
 
     // 实例化拦截器管理器
     const interceptorManager = new InterceptorManager(this.instance);
+    // 请求拦截器
     this.addRequestInterceptor =
       interceptorManager.addRequestInterceptor.bind(interceptorManager);
+    // 响应拦截器
     this.addResponseInterceptor =
       interceptorManager.addResponseInterceptor.bind(interceptorManager);
 
