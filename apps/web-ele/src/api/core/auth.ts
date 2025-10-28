@@ -1,4 +1,4 @@
-import { requestClient,baseRequestClient } from '#/api/request';
+import { baseRequestClient, requestClient } from '#/api/request';
 
 export namespace AuthApi {
   /** 登录接口参数 */
