@@ -27,7 +27,6 @@ export const defaultResponseInterceptor = ({
       if (config.responseReturn === 'raw') {
         return response;
       }
-
       if (status >= 200 && status < 400) {
         if (config.responseReturn === 'body') {
           return responseData;
@@ -55,7 +54,6 @@ type authenticateResponseInterceptorType = {
   formatToken: (token: string) => null | string;
   tokenName: () => string;
 };
-
 // 鉴权响应拦截器(根据http状态码进行判断)
 export const authenticateResponseInterceptor = ({
   client,
@@ -72,14 +70,26 @@ export const authenticateResponseInterceptor = ({
       if (response?.status !== 401) {
         throw error;
       }
+      // 判断退出登录接口鉴权边界情况
+      if (config.url.includes('logout')) {
+        return response;
+      }
       // 判断是否启用了 refreshToken 功能
-      // 如果没有启用或者已经是重试请求了，直接跳转到重新登录
+      // 如果没有启用刷新token功能或者已经是重试请求了，直接跳转到重新登录
       if (!enableRefreshToken || config.__isRetryRequest) {
-        await doReAuthenticate();
-        throw error;
+        const reAuthenticateFlag = localStorage.getItem('reAuthenticateFlag');
+        if (reAuthenticateFlag) {
+          return;
+        } else {
+          // 只需要执行一次重新登录逻辑
+          localStorage.setItem('reAuthenticateFlag', '1');
+          await doReAuthenticate();
+          throw error;
+        }
       }
       // 如果正在刷新 token，则将请求加入队列，等待刷新完成
       if (client.isRefreshing) {
+        // 异步处理，等待刷新完成
         return new Promise((resolve) => {
           client.refreshTokenQueue.push((newToken: string) => {
             config.headers[tokenName()] = formatToken(newToken);
@@ -87,28 +97,30 @@ export const authenticateResponseInterceptor = ({
           });
         });
       }
-
       // 标记开始刷新 token
       client.isRefreshing = true;
       // 标记当前请求为重试请求，避免无限循环
       config.__isRetryRequest = true;
 
       try {
+        // 刷新token（同步处理，最后执行，401这里返回空token）
         const newToken = await doRefreshToken();
-
+        if (!newToken) {
+          client.refreshTokenQueue = [];
+          await doReAuthenticate();
+          throw error;
+        }
         // 处理队列中的请求
         client.refreshTokenQueue.forEach((callback) => callback(newToken));
         // 清空队列
         client.refreshTokenQueue = [];
-
+        // 重新请求处理第一次401请求
         return client.request(error.config.url, { ...error.config });
       } catch (refreshError) {
         // 如果刷新 token 失败，处理错误（如强制登出或跳转登录页面）
-        client.refreshTokenQueue.forEach((callback) => callback(''));
         client.refreshTokenQueue = [];
         console.error('Refresh token failed, please login again.');
         await doReAuthenticate();
-
         throw refreshError;
       } finally {
         client.isRefreshing = false;
@@ -167,6 +179,7 @@ export const errorMessageResponseInterceptor = (
           errorMessage = $t('ui.fallback.http.internalServerError');
         }
       }
+      // errorMessage为系统默认的错误提示
       makeErrorMessage?.(errorMessage, error);
       return Promise.reject(error);
     },

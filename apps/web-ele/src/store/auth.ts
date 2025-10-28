@@ -44,7 +44,7 @@ export const useAuthStore = defineStore('auth', () => {
         accessStore.setAccessToken(accessToken);
         accessStore.setRefreshToken(refreshToken);
         accessStore.setTokenName(tokenName);
-
+        localStorage.removeItem('reAuthenticateFlag');
         // 2.获取用户信息、权限码并存储到 accessStore、 accessStore中
         const [fetchUserInfoResult, accessCodes] = await Promise.all([
           fetchUserInfo(),
@@ -91,14 +91,18 @@ export const useAuthStore = defineStore('auth', () => {
     accessStore.setLoginExpired(false);
 
     // 回登录页带上当前路由地址
-    await router.replace({
-      path: LOGIN_PATH,
-      query: redirect
-        ? {
-            redirect: encodeURIComponent(router.currentRoute.value.fullPath),
-          }
-        : {},
-    });
+    await router
+      .replace({
+        path: LOGIN_PATH,
+        query: redirect
+          ? {
+              redirect: encodeURIComponent(router.currentRoute.value.fullPath),
+            }
+          : {},
+      })
+      .finally(() => {
+        localStorage.removeItem('reAuthenticateFlag');
+      });
   }
 
   async function fetchUserInfo() {

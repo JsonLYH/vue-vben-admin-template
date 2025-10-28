@@ -6,7 +6,6 @@ import { ElConfigProvider } from 'element-plus';
 import { elementLocale } from '#/locales';
 
 defineOptions({ name: 'App' });
-
 useElementPlusDesignTokens();
 </script>
 

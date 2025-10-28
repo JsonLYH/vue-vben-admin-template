@@ -20,7 +20,6 @@ function setupCommonGuard(router: Router) {
 
   router.beforeEach((to) => {
     to.meta.loaded = loadedPaths.has(to.path);
-
     // 页面加载进度条
     if (!to.meta.loaded && preferences.transition.progress) {
       startProgress();
@@ -49,7 +48,8 @@ function setupAccessGuard(router: Router) {
     const accessStore = useAccessStore();
     const userStore = useUserStore();
     const authStore = useAuthStore();
-
+    localStorage.removeItem('reAuthenticateFlag');
+    accessStore.setLoginExpired(false);
     // 基本路由，这些路由不需要进入权限拦截
     if (coreRouteNames.includes(to.name as string)) {
       if (to.path === LOGIN_PATH && accessStore.accessToken) {

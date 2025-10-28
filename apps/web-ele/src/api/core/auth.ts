@@ -1,4 +1,4 @@
-import { requestClient } from '#/api/request';
+import { requestClient,baseRequestClient } from '#/api/request';
 
 export namespace AuthApi {
   /** 登录接口参数 */
@@ -19,7 +19,9 @@ export namespace AuthApi {
   }
 
   export interface RefreshTokenResult {
-    data: string;
+    data: {
+      data: string;
+    };
     status: number;
   }
 }
@@ -46,9 +48,12 @@ export async function loginApi(data: AuthApi.LoginParams) {
 //   });
 // }
 export async function refreshTokenApi(data: AuthApi.RefreshTokenParams) {
-  return requestClient.get<string>('/api/v1/adminUser/refreshToken', {
-    params: data,
-  });
+  return baseRequestClient.get<AuthApi.RefreshTokenResult>(
+    '/api/v1/adminUser/refreshToken',
+    {
+      params: data,
+    },
+  );
 }
 
 /**

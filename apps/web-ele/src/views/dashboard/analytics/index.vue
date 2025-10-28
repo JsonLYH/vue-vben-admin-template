@@ -13,6 +13,11 @@ import {
   SvgCardIcon,
   SvgDownloadIcon,
 } from '@vben/icons';
+import { useAccessStore } from '@vben/stores';
+
+import { ElButton } from 'element-plus';
+
+import { refreshTokenApi } from '#/api/core/auth';
 
 import AnalyticsTrends from './analytics-trends.vue';
 import AnalyticsVisitsData from './analytics-visits-data.vue';
@@ -61,10 +66,17 @@ const chartTabs: TabOption[] = [
     value: 'visits',
   },
 ];
+async function refreshTokenApiTest() {
+  const accessStore = useAccessStore();
+  await refreshTokenApi({
+    refreshToken: accessStore.refreshToken,
+  });
+}
 </script>
 
 <template>
   <div class="p-5">
+    <ElButton @click="refreshTokenApiTest">刷新测试</ElButton>
     <AnalysisOverview :items="overviewItems" />
     <AnalysisChartsTabs :tabs="chartTabs" class="mt-5">
       <template #trends>
