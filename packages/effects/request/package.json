@@ -22,6 +22,7 @@
   "dependencies": {
     "@vben/locales": "workspace:*",
     "@vben/utils": "workspace:*",
+    "@vben/preferences": "workspace:*",
     "axios": "catalog:",
     "qs": "catalog:"
   },

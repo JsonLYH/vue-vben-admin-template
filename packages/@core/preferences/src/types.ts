@@ -71,6 +71,8 @@ interface AppPreferences {
   locale: SupportedLanguagesType;
   /** 登录过期模式 */
   loginExpiredMode: LoginExpiredModeType;
+  /** 退出登录接口标识 */
+  logoutApiFlag: string;
   /** 应用名 */
   name: string;
   /** 偏好设置按钮位置 */

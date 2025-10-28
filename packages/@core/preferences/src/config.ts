@@ -2,6 +2,7 @@ import type { Preferences } from './types';
 
 const defaultPreferences: Preferences = {
   app: {
+    logoutApiFlag: 'logout',
     accessMode: 'frontend',
     authPageLayout: 'panel-right',
     checkUpdatesInterval: 1,

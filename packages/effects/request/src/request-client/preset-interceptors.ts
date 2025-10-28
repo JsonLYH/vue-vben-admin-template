@@ -2,6 +2,7 @@ import type { RequestClient } from './request-client';
 import type { MakeErrorMessageFn, ResponseInterceptorConfig } from './types';
 
 import { $t } from '@vben/locales';
+import { preferences } from '@vben/preferences';
 import { isFunction } from '@vben/utils';
 
 import axios from 'axios';
@@ -71,7 +72,7 @@ export const authenticateResponseInterceptor = ({
         throw error;
       }
       // 判断退出登录接口鉴权边界情况
-      if (config.url.includes('logout')) {
+      if (config.url.includes(preferences.app.logoutApiFlag)) {
         return response;
       }
       // 判断是否启用了 refreshToken 功能
