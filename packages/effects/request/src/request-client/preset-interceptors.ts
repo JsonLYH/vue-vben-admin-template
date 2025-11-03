@@ -24,11 +24,12 @@ export const defaultResponseInterceptor = ({
   return {
     fulfilled: (response) => {
       const { config, data: responseData, status } = response;
-      // 如果是原始格式则响应的内容，不根据dataField、codeField、successCode进行
+      // 如果是原始格式则响应的内容（包含status、headers、data等），不根据dataField、codeField、successCode进行处理
       if (config.responseReturn === 'raw') {
         return response;
       }
       if (status >= 200 && status < 400) {
+        // 返回响应的body部分
         if (config.responseReturn === 'body') {
           return responseData;
         } else if (
