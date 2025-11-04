@@ -80,6 +80,9 @@ pnpm dev
 pnpm build
 ```
 
+# icon图标合集
+链接：https://icones.js.org/collection/academicons
+
 ## 更新日志
 
 [CHANGELOG](https://github.com/vbenjs/vue-vben-admin/releases)
