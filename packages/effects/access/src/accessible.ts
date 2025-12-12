@@ -33,7 +33,7 @@ async function generateAccessible(
   options.routes = cloneDeep(options.routes);
   // 生成路由（在此函数，进行区分路由权限模式--前端访问控制、后端访问控制、混合模式）
   const accessibleRoutes = await generateRoutes(mode, options);
-
+  // 静态路由配置的/页面（component为BasicLayout）
   const root = router.getRoutes().find((item) => item.path === '/');
 
   // 获取已有的路由名称列表
@@ -50,9 +50,7 @@ async function generateAccessible(
       // 根据router name判断，如果路由已经存在，则不再添加
       if (names?.includes(route.name)) {
         // 找到已存在的路由索引并更新，不更新会造成切换用户时，一级目录未更新，homePath 在二级目录导致的404问题
-        const index = root.children?.findIndex(
-          (item) => item.name === route.name,
-        );
+        const index = root.children?.findIndex((item) => item.name === route.name);
         if (index !== undefined && index !== -1 && root.children) {
           root.children[index] = route;
         }
@@ -95,7 +93,7 @@ async function generateRoutes(
       break;
     }
     case 'frontend': {
-      // generateRoutesByFrontend复制权限的判断，路由的过滤
+      // generateRoutesByFrontend负责权限的判断（把没权限的页面组件替换为403提示组件），路由的过滤
       resultRoutes = await generateRoutesByFrontend(
         routes,
         roles || [],
@@ -133,6 +131,7 @@ async function generateRoutes(
       route.component = async () => {
         const component = await originalComponent();
         if (!component.default) return component;
+        //组件名称修改为当前路由的名称
         return defineComponent({
           name: route.name as string,
           setup(props, { attrs, slots }) {
@@ -148,7 +147,7 @@ async function generateRoutes(
     }
     const firstChild = route.children[0];
 
-    // 如果子路由不是以/开头，则直接返回,这种情况需要计算全部父级的path才能得出正确的path，这里不做处理
+    // 如果子路由不是以/开头或第一个子路由不存在path，则直接返回,这种情况需要计算全部父级的path才能得出正确的path，这里不做处理
     if (!firstChild?.path || !firstChild.path.startsWith('/')) {
       return route;
     }
@@ -156,8 +155,6 @@ async function generateRoutes(
     route.redirect = firstChild.path;
     return route;
   });
-
   return resultRoutes;
 }
-
 export { generateAccessible };
