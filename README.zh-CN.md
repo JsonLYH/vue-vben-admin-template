@@ -14,16 +14,16 @@
 
 **中文** | [English](./README.md) | [日本語](./README.ja-JP.md)
 
-## 简介
+## Icon图标库
+链接：https://icon-sets.iconify.design/
 
+## 简介
 Vue Vben Admin 是 Vue Vben Admin 的升级版本。作为一个免费开源的中后台模板，它采用了最新的 Vue 3、Vite、TypeScript 等主流技术开发，开箱即用，可用于中后台前端开发，也适合学习参考。
 
 ## 升级提示
-
 该版本为最新版本 `5.0`，与其他版本不兼容，如果你是新项目，建议使用最新版本。如果你想查看旧版本，请使用 [v2 分支](https://github.com/vbenjs/vue-vben-admin/tree/v2)
 
 ## 特性
-
 - **最新技术栈**：使用 Vue3/vite 等前端前沿技术开发
 - **TypeScript**：应用程序级 JavaScript 的语言
 - **主题**：提供多套主题色彩，可配置自定义主题
@@ -31,7 +31,6 @@ Vue Vben Admin 是 Vue Vben Admin 的升级版本。作为一个免费开源的�
 - **权限**：内置完善的动态路由权限生成方案
 
 ## 预览
-
 - [Vben Admin](https://vben.pro/) - 完整版中文站点
 
 测试账号：vben/123456
@@ -43,17 +42,14 @@ Vue Vben Admin 是 Vue Vben Admin 的升级版本。作为一个免费开源的�
 </div>
 
 ### 使用 Gitpod
-
 在 Gitpod（适用于 GitHub 的免费在线开发环境）中打开项目，并立即开始编码。
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/vbenjs/vue-vben-admin)
 
 ## 文档
-
 [文档地址](https://doc.vben.pro/)
 
 ## 安装使用
-
 1. 获取项目代码
 
 ```bash
@@ -61,7 +57,6 @@ git clone https://github.com/vbenjs/vue-vben-admin.git
 ```
 
 2. 安装依赖
-
 ```bash
 cd vue-vben-admin
 npm i -g corepack
@@ -69,13 +64,11 @@ pnpm install
 ```
 
 3. 运行
-
 ```bash
 pnpm dev
 ```
 
 4. 打包
-
 ```bash
 pnpm build
 ```
@@ -84,15 +77,12 @@ pnpm build
 链接：https://icones.js.org/collection/academicons
 
 ## 更新日志
-
 [CHANGELOG](https://github.com/vbenjs/vue-vben-admin/releases)
 
 ## 如何贡献
-
 非常欢迎你的加入！[提一个 Issue](https://github.com/anncwb/vue-vben-admin/issues/new/choose) 或者提交一个 Pull Request。
 
 **Pull Request 流程：**
-
 1. Fork 代码
 2. 创建自己的分支：`git checkout -b feature/xxxx`
 3. 提交你的修改：`git commit -am 'feat(function): add xxxxx'`
