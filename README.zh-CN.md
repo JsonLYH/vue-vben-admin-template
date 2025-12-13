@@ -15,6 +15,7 @@
 **中文** | [English](./README.md) | [日本語](./README.ja-JP.md)
 
 ## Icon图标库
+链接：https://icones.js.org/collection/map
 链接：https://icon-sets.iconify.design/
 
 ## 简介
