@@ -73,6 +73,9 @@ pnpm dev
 ```bash
 pnpm build
 ```
+# 新增语言
+新增语言需要修改以下文件：
+![alt text](image.png)
 
 # icon图标合集
 链接：https://icones.js.org/collection/academicons
